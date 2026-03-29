@@ -3,7 +3,6 @@ package account
 import (
 	"context"
 	"database/sql"
-	"go-grpc-elk-postgres-microservice/account"
 )
 
 type Repository interface {
@@ -44,7 +43,7 @@ func (r *postgresRepository) PutAccount(ctx context.Context, a Account) error {
 	return err
 }
 
-func (r *postgresRepository) GetAccountByID(ctx context.Context, id string) (*Account, err) {
+func (r *postgresRepository) GetAccountByID(ctx context.Context, id string) (*Account, error) {
 	row := r.db.QueryRowContext(ctx, "SELECT id, name FROM accounts WHERE id = $1", id)
 	a := &Account{}
 	if err := row.Scan(&a.ID, &a.Name); err != nil {
@@ -54,8 +53,7 @@ func (r *postgresRepository) GetAccountByID(ctx context.Context, id string) (*Ac
 	return a, nil
 }
 
-
-func (r *postgresRepository) ListAccounts(ctx context.Context, skip uint64, take uint64) ([]Account, err){
+func (r *postgresRepository) ListAccounts(ctx context.Context, skip uint64, take uint64) ([]Account, error) {
 	rows, err := r.db.QueryContext(
 		ctx,
 		"SELECT id, name FROM accounts ORDER BY id DESC OFFSET $1 LIMIT $2",
