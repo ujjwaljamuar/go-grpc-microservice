@@ -24,7 +24,7 @@ func ListenGRPC(s Service, port int) error {
 	server := grpc.NewServer()
 	pb.RegisterAccountServiceServer(server, &grpcServer{
 		UnimplementedAccountServiceServer: pb.UnimplementedAccountServiceServer{},
-		service: s, 
+		service:                           s,
 	})
 	reflection.Register(server)
 	return server.Serve(listener)
@@ -56,20 +56,20 @@ func (s *grpcServer) GetAccount(ctx context.Context, r *pb.GetAccountRequest) (*
 	}, nil
 }
 
-func (s *grpcServer) GetAccounts(ctx context.Context, r *pb.GetAccountResponse) (*pb.GetAccountResponse, error) {
+func (s *grpcServer) GetAccounts(ctx context.Context, r *pb.GetAccountsRequest) (*pb.GetAccountsResponse, error) {
 	res, err := s.service.GetAccounts(ctx, r.Skip, r.Take)
 	if err != nil {
 		return nil, err
 	}
-
 	accounts := []*pb.Account{}
 	for _, p := range res {
-		accounts = append(accounts, &pb.Account{
-			Id:   p.ID,
-			Name: p.Name,
-		},
+		accounts = append(
+			accounts,
+			&pb.Account{
+				Id:   p.ID,
+				Name: p.Name,
+			},
 		)
 	}
-
-	return &pb.GetAccountResponse{Accounts: accounts}, nil
+	return &pb.GetAccountsResponse{Accounts: accounts}, nil
 }

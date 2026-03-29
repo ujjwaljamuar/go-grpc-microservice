@@ -25,7 +25,7 @@ func NewService(r Repository) Service {
 	return &accountService{r}
 }
 
-func (s *accountService) PostAccount(ctx context.Context, name string) (*accountService, error) {
+func (s *accountService) PostAccount(ctx context.Context, name string) (*Account, error) {
 	a := &Account{
 		Name: name,
 		ID:   ksuid.New().String(),
