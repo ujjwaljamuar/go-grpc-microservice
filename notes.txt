@@ -1,0 +1,5 @@
+protoc --go_out=./pb --go-grpc_out=./pb account.proto
+
+go run github.com/99designs/gqlgen generate
+
+go mod vendor

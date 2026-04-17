@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"go-grpc-elk-postgres-microservice/product"
+	"go-grpc-elk-postgres-microservice/order"
 
 	"github.com/kelseyhightower/envconfig"
 	"github.com/tinrab/retry"
@@ -12,6 +12,8 @@ import (
 
 type Config struct {
 	DatabaseURL string `envconfig:"DATABASE_URL"`
+	AccountURL  string `envconfig:"ACCOUNT_SERVICE_URL"`
+	CatalogURL  string `envconfig:"CATALOG_SERVICE_URL"`
 }
 
 func main() {
@@ -21,9 +23,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var r product.Repository
+	var r order.Repository
 	retry.ForeverSleep(2*time.Second, func(_ int) (err error) {
-		r, err = product.NewElasticRepository(cfg.DatabaseURL)
+		r, err = order.NewPostgresRepository(cfg.DatabaseURL)
 		if err != nil {
 			log.Println(err)
 		}
@@ -32,6 +34,6 @@ func main() {
 	defer r.Close()
 
 	log.Println("Listening on port 8080...")
-	s := product.NewService(r)
-	log.Fatal(product.ListenGRPC(s, 8080))
+	s := order.NewService(r)
+	log.Fatal(order.ListenGRPC(s, cfg.AccountURL, cfg.CatalogURL, 8080))
 }

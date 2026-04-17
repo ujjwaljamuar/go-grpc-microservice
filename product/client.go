@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"go-grpc-elk-postgres-microservice/product/pb"
+
 	"google.golang.org/grpc"
 )
 

@@ -1,12 +1,13 @@
-FROM golang:1.13-alpine3.11 AS build
-RUN apk --no-cache add gcc g++ make ca-certificates
+FROM golang:1.25-alpine AS build
+RUN apk --no-cache add ca-certificates git
 WORKDIR /go/src/go-grpc-elk-postgres-microservice
 COPY go.mod go.sum ./
-COPY vendor vendor
+RUN go mod download
 COPY account account
-RUN GO111MODULE=on go build -mod vendor -o /go/bin/app ./account/cmd/account
+RUN CGO_ENABLED=0 go build -o /go/bin/app ./account/cmd/account
 
-FROM alpine:3.11
+FROM alpine:3.21
+RUN apk --no-cache add ca-certificates
 WORKDIR /usr/bin
 COPY --from=build /go/bin .
 EXPOSE 8080

@@ -3,8 +3,10 @@ RUN apk --no-cache add ca-certificates git
 WORKDIR /go/src/go-grpc-elk-postgres-microservice
 COPY go.mod go.sum ./
 RUN go mod download
+COPY account account
 COPY product product
-RUN CGO_ENABLED=0 go build -o /go/bin/app ./product/cmd/catalog
+COPY order order
+RUN CGO_ENABLED=0 go build -o /go/bin/app ./order/cmd/order
 
 FROM alpine:3.21
 RUN apk --no-cache add ca-certificates
